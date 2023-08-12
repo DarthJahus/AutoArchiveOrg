@@ -2,7 +2,7 @@
 /*
 Plugin Name: Archive.org Auto Archiver
 Description: Automatically requests archiving of new articles on Archive.org upon publishing.
-Version:     1.2
+Version:     1.3
 Author:      Jahus
 Author URI:  https://jahus.net
 License:     Unlicense
@@ -23,6 +23,8 @@ function archive_org_settings_page() {
     ?>
     <div class="wrap">
         <h2>Archive.org Auto Archiver Settings</h2>
+		<p>Please provide your Archive.org API keys below. You can obtain these keys from your <a href="https://archive.org/account/s3.php" target="_blank">Archive.org S3 Account Page</a>.</p>
+
         <form method="post" action="options.php">
             <?php settings_fields('archive-org-settings-group'); ?>
             <?php do_settings_sections('archive-org-settings-group'); ?>
@@ -30,13 +32,13 @@ function archive_org_settings_page() {
                 <tr valign="top">
                     <th scope="row">Archive.org Access Key:</th>
                     <td>
-                        <input type="text" name="archive_org_access_key" value="<?php echo esc_attr(get_option('archive_org_access_key')); ?>" />
+                        <input type="password" name="archive_org_access_key" value="<?php echo esc_attr(get_option('archive_org_access_key')); ?>" />
                     </td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Archive.org Secret Key:</th>
                     <td>
-                        <input type="text" name="archive_org_secret_key" value="<?php echo esc_attr(get_option('archive_org_secret_key')); ?>" />
+                        <input type="password" name="archive_org_secret_key" value="<?php echo esc_attr(get_option('archive_org_secret_key')); ?>" />
                     </td>
                 </tr>
             </table>
