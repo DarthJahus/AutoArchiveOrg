@@ -2,15 +2,54 @@
 /*
 Plugin Name: Archive.org Auto Archiver
 Description: Automatically requests archiving of new articles on Archive.org upon publishing.
-Version:     1.0
+Version:     1.1
 Author:      Jahus
 Author URI:  https://jahus.net
 License:     Unlicense
 */
 
+function archive_org_settings_menu() {
+    add_options_page(
+        'Archive.org Auto Archiver Settings',
+        'Archive.org Auto Archiver',
+        'manage_options',
+        'archive-org-settings',
+        'archive_org_settings_page'
+    );
+}
+add_action('admin_menu', 'archive_org_settings_menu');
+
+function archive_org_settings_page() {
+    ?>
+    <div class="wrap">
+        <h2>Archive.org Auto Archiver Settings</h2>
+        <form method="post" action="options.php">
+            <?php settings_fields('archive-org-settings-group'); ?>
+            <?php do_settings_sections('archive-org-settings-group'); ?>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row">Archive.org API Key:</th>
+                    <td>
+                        <input type="text" name="archive_org_api_key" value="<?php echo esc_attr(get_option('archive_org_api_key')); ?>" />
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+    </div>
+    <?php
+}
+
+function archive_org_register_settings() {
+    register_setting('archive-org-settings-group', 'archive_org_api_key');
+}
+add_action('admin_init', 'archive_org_register_settings');
+
+
 function archive_org_request($new_status, $old_status, $post) {
-    if ($new_status == 'publish' && $old_status != 'publish') {
-        $api_key = 'S3_access_key:S3_secret_key';
+    $api_key = get_option('archive_org_api_key');
+
+    if ($api_key && $new_status == 'publish' && $old_status != 'publish') {
 
         $archive_api_url = 'https://web.archive.org/save';
         $headers = array(
