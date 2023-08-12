@@ -2,7 +2,7 @@
 /*
 Plugin Name: Archive.org Auto Archiver
 Description: Automatically requests archiving of new articles on Archive.org upon publishing.
-Version:     1.1
+Version:     1.2
 Author:      Jahus
 Author URI:  https://jahus.net
 License:     Unlicense
@@ -28,9 +28,15 @@ function archive_org_settings_page() {
             <?php do_settings_sections('archive-org-settings-group'); ?>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row">Archive.org API Key:</th>
+                    <th scope="row">Archive.org Access Key:</th>
                     <td>
-                        <input type="text" name="archive_org_api_key" value="<?php echo esc_attr(get_option('archive_org_api_key')); ?>" />
+                        <input type="text" name="archive_org_access_key" value="<?php echo esc_attr(get_option('archive_org_access_key')); ?>" />
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Archive.org Secret Key:</th>
+                    <td>
+                        <input type="text" name="archive_org_secret_key" value="<?php echo esc_attr(get_option('archive_org_secret_key')); ?>" />
                     </td>
                 </tr>
             </table>
@@ -41,16 +47,19 @@ function archive_org_settings_page() {
 }
 
 function archive_org_register_settings() {
-    register_setting('archive-org-settings-group', 'archive_org_api_key');
+    register_setting('archive-org-settings-group', 'archive_org_access_key');
+    register_setting('archive-org-settings-group', 'archive_org_secret_key');
 }
 add_action('admin_init', 'archive_org_register_settings');
 
 
 function archive_org_request($new_status, $old_status, $post) {
-    $api_key = get_option('archive_org_api_key');
+    $access_key = get_option('archive_org_access_key');
+    $secret_key = get_option('archive_org_secret_key');
 
-    if ($api_key && $new_status == 'publish' && $old_status != 'publish') {
-
+    if ($access_key && $secret_key && $new_status == 'publish' && $old_status != 'publish') {
+		$api_key = $access_key . ':' . $secret_key;
+		
         $archive_api_url = 'https://web.archive.org/save';
         $headers = array(
             'Accept' => 'application/json',
