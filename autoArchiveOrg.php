@@ -2,7 +2,7 @@
 /*
 Plugin Name: Archive.org Auto Archiver
 Description: Automatically requests archiving of new articles on Archive.org upon publishing.
-Version:     1.3
+Version:     1.4
 Author:      Jahus
 Author URI:  https://jahus.net
 License:     Unlicense
@@ -78,8 +78,19 @@ function archive_org_request($new_status, $old_status, $post) {
 
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) != 200) {
             error_log('Archive.org archiving request failed.');
-        }
+        } else {
+			add_action('admin_notices', 'archive_org_success_notice');
+		}
     }
 }
 add_action('transition_post_status', 'archive_org_request', 10, 3);
+
+function archive_org_success_notice() {
+    ?>
+    <div class="notice notice-success is-dismissible">
+        <p><?php _e('Archiving request sent successfully!', 'archive-org-auto-archiver'); ?></p>
+    </div>
+    <?php
+}
+
 ?>
